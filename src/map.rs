@@ -1,4 +1,6 @@
 use bracket_pathfinding::prelude::*;
+use bracket_lib::prelude::*;
+use crate::game_state::{xy_idx};
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum TileType {
@@ -11,8 +13,29 @@ pub struct Map {
 }
 
 impl Map {
-    pub fn new() -> Self {
-        Map { map: vec![TileType::Floor; 80 * 50] }
+    pub fn new(player_position: usize) -> Self {
+        let mut m = Map { map: vec![TileType::Floor; 80 * 50] };
+        for x in 0..80 {
+            m.map[xy_idx(x, 0)] = TileType::Wall;
+            m.map[xy_idx(x, 49)] = TileType::Wall;
+        }
+        for y in 0..50 {
+            m.map[xy_idx(0, y)] = TileType::Wall;
+            m.map[xy_idx(79, y)] = TileType::Wall;
+        }
+
+        let mut rng = RandomNumberGenerator::new();
+
+        for _ in 0..1400 {
+            let x = rng.range(1, 79);
+            let y = rng.range(1, 49);
+            let idx = xy_idx(x, y);
+            if player_position != idx {
+                m.map[idx] = TileType::Wall;
+            }
+        };
+
+        m
     }
 
     pub fn is_exit_valid(&self, x: i32, y: i32) -> bool {

@@ -1074,6 +1074,7 @@ dependencies = [
  "bracket-pathfinding",
  "bracket-terminal",
  "specs",
+ "specs-derive",
 ]
 
 [[package]]
@@ -1383,6 +1384,17 @@ dependencies = [
  "shred",
  "shrev",
  "tuple_utils",
+]
+
+[[package]]
+name = "specs-derive"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3e23e09360f3d2190fec4222cd9e19d3158d5da948c0d1ea362df617dd103511"
+dependencies = [
+ "proc-macro2 1.0.13",
+ "quote 1.0.5",
+ "syn",
 ]
 
 [[package]]
