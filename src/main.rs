@@ -7,6 +7,7 @@ mod ecs_register;
 use ecs_register::init_world;
 pub mod components;
 
+
 fn main() -> BError {
     let context = BTermBuilder::simple80x50()
         .with_title("Bracket Terminal Example - A* Mouse")

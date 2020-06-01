@@ -14,7 +14,7 @@ pub struct State {
 
 impl State {
     pub fn new(world: World) -> State {
-        let player_position = xy_idx(40, 25);
+        let player_position = xy_idx(40, 25);        
         let state = State {
             ecs: world,
             player_position: player_position,
