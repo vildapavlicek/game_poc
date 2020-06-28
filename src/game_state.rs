@@ -1,6 +1,7 @@
 use bracket_lib::prelude::*;
 use crate::map::{TileType, Map};
-use specs::prelude::*;
+use legion::prelude::World;
+
 
 pub struct State {
     pub ecs: World,

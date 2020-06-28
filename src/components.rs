@@ -1,8 +1,6 @@
-use specs::prelude::*;
-use specs_derive::*;
 use bracket_lib::prelude::{FontCharType, RGB};
 
-#[derive(Component)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Controlable {
     pub selected: bool
 }
@@ -11,11 +9,15 @@ impl Controlable {
     pub fn select(&mut self) {
         self.selected = !self.selected;
     }
+
+    pub fn new() -> Self {
+        Controlable { selected: false }
+    }
 }
 
-#[derive(Component, Clone)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Renderable {
-    pub glyph: FontCharType,
+    pub glyph: char,
     pub fg: RGB,
     pub bg: RGB,
     pub render_order : i32
