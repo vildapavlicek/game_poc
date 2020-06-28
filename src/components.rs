@@ -8,13 +8,15 @@ pub struct Controlable {
 impl Controlable {
     pub fn select(&mut self) {
         self.selected = !self.selected;
-        println!("Select activated!")
     }
 
     pub fn new() -> Self {
         Controlable { selected: false }
     }
 }
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Player;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Renderable {

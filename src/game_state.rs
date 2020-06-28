@@ -7,7 +7,7 @@ pub struct State {
     pub ecs: World,
     map: Map,
     visible: Vec<bool>,
-    mode: Mode,
+    mode: RunState,
     path: NavigationPath,
 }
 
@@ -18,7 +18,7 @@ impl State {
             ecs: world,
             map: Map::new(player_position),
             visible: vec![false; 80 * 50],
-            mode: Mode::Waiting,
+            mode: RunState::Waiting,
             path: NavigationPath::new(),
         };
 
@@ -37,12 +37,11 @@ impl GameState for State {
             *v = false;
         }
 
-        // Obtain the player's visible tile set, and apply it
-        //let player_position = self.map.index_to_point2d(self.player_position);
+        // Obtain visible tile set, and apply it
         {
             let query =
-                <(Read<Position>, Read<Controlable>)>::query().filter(changed::<Position>());
-            for (pos, _) in query.iter(&self.ecs) {
+                <Read<Position>>::query().filter(changed::<Position>()).filter(component::<Controlable>());
+            for pos in query.iter(&self.ecs) {
                 let fov = field_of_view_set(Point::new(pos.get_x(), pos.get_y()), 8, &self.map);
                 // Note that the steps above would generally not be run every frame!
                 for idx in &fov {
@@ -89,34 +88,38 @@ impl GameState for State {
         }
 
         match self.mode {
-            Mode::Waiting => {
+            RunState::Waiting => {
                 let mouse_idx = self.map.point2d_to_index(INPUT.lock().mouse_tile(0));
 
-                let query = <(Read<Position>, Write<Controlable>, Read<Renderable>)>::query();
-                for (pos, mut controlable, rend) in query.iter_mut(&mut self.ecs) {
-                    
-                    if xy_idx(pos.get_x(), pos.get_y()) == mouse_idx && INPUT.lock().is_mouse_button_pressed(0) {
+                let query = <(Read<Position>, Write<Controlable>)>::query();
+                for (pos, mut controlable) in query.iter_mut(&mut self.ecs) {
+                    if xy_idx(pos.get_x(), pos.get_y()) == mouse_idx
+                        && INPUT.lock().is_mouse_button_pressed(0)
+                    {
                         controlable.selected = true;
-                        println!("Selected unit {}", rend.glyph)
-                    }
-
-                    if controlable.selected {
-                        self.mode = Mode::Selected;
-                    } else {
-                        self.mode = Mode::Waiting;
+                        self.mode = RunState::Selected;
+                        break;
                     }
                 }
             }
 
-            Mode::Selected => {                
+            RunState::Selected => {
                 // Render a mouse cursor
                 let mouse_pos = INPUT.lock().mouse_tile(0);
                 let mouse_idx = self.map.point2d_to_index(mouse_pos);
 
                 // for ECS
-                let query = <(Read<Position>, Read<Controlable>)>::query();
-                for (pos, con) in query.iter_mut(&mut self.ecs) {
+                let query = <(Read<Position>, Write<Controlable>)>::query();
+                for (pos, mut con) in query.iter_mut(&mut self.ecs) {
                     if con.selected {
+                        if mouse_idx == xy_idx(pos.get_x(), pos.get_y())
+                            && INPUT.lock().is_mouse_button_pressed(0)
+                        {
+                            con.selected = false;
+                            self.mode = RunState::Waiting;
+                            break;
+                        }
+
                         if self.map.map[mouse_idx as usize] != TileType::Wall {
                             let path = a_star_search(
                                 xy_idx(pos.get_x(), pos.get_y()),
@@ -138,7 +141,7 @@ impl GameState for State {
                                 }
 
                                 if INPUT.lock().is_mouse_button_pressed(0) {
-                                    self.mode = Mode::Moving;
+                                    self.mode = RunState::Moving;
                                     self.path = path;
                                 }
                             }
@@ -147,7 +150,7 @@ impl GameState for State {
                 }
             }
 
-            Mode::Moving => {
+            RunState::Moving => {
                 let query = <(Write<Position>, Read<Controlable>)>::query();
                 for (mut pos, con) in query.iter_mut(&mut self.ecs) {
                     if con.selected {
@@ -157,7 +160,7 @@ impl GameState for State {
                 }
                 self.path.steps.remove(0);
                 if self.path.steps.is_empty() {
-                    self.mode = Mode::Waiting;
+                    self.mode = RunState::Selected;
                 }
             }
         }
@@ -178,7 +181,7 @@ impl GameState for State {
 }
 
 #[derive(PartialEq, Copy, Clone)]
-enum Mode {
+enum RunState {
     Waiting,
     Selected,
     Moving,

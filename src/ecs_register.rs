@@ -4,11 +4,9 @@ use crate::map::*;
 use bracket_lib::prelude::*;
 use legion::prelude::*;
 
+
 pub fn init_world() -> World {
     let mut world = Universe::new().create_world();
-
-    // TODO: move resource separatly because we need to use them for scheduler
-    // schedule.execute(&mut world, &mut resources);
 
     world.insert(
         (),
@@ -22,37 +20,37 @@ pub fn init_world() -> World {
                     render_order: 0,
                 },
                 Position::new(41, 25),
-            ), /* ,
-               (
-                   Controlable::new(),
-                   Renderable {
-                       bg: RGB::named(BLACK),
-                       fg: RGB::named(YELLOW),
-                       glyph: '2',
-                       render_order: 0,
-                   },
-                   Position::new(42, 25),
-               ),
-               (
-                   Controlable::new(),
-                   Renderable {
-                       bg: RGB::named(BLACK),
-                       fg: RGB::named(YELLOW),
-                       glyph: '3',
-                       render_order: 0,
-                   },
-                   Position::new(43, 25),
-               ),
-               (
-                   Controlable::new(),
-                   Renderable {
-                       bg: RGB::named(BLACK),
-                       fg: RGB::named(YELLOW),
-                       glyph: '4',
-                       render_order: 0,
-                   },
-                   Position::new(44, 25),
-               ), */
+            ),
+            (
+                Controlable::new(),
+                Renderable {
+                    bg: RGB::named(BLACK),
+                    fg: RGB::named(YELLOW),
+                    glyph: '2',
+                    render_order: 0,
+                },
+                Position::new(42, 25),
+            ),
+            (
+                Controlable::new(),
+                Renderable {
+                    bg: RGB::named(BLACK),
+                    fg: RGB::named(YELLOW),
+                    glyph: '3',
+                    render_order: 0,
+                },
+                Position::new(43, 25),
+            ),
+            (
+                Controlable::new(),
+                Renderable {
+                    bg: RGB::named(BLACK),
+                    fg: RGB::named(YELLOW),
+                    glyph: '4',
+                    render_order: 0,
+                },
+                Position::new(44, 25),
+            ),
         ],
     );
 
