@@ -1,6 +1,6 @@
-use bracket_pathfinding::prelude::*;
+use crate::game_state::xy_idx;
 use bracket_lib::prelude::*;
-use crate::game_state::{xy_idx};
+use bracket_pathfinding::prelude::*;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum TileType {
@@ -9,12 +9,14 @@ pub enum TileType {
 }
 
 pub struct Map {
-    pub map: Vec<TileType>
+    pub map: Vec<TileType>,
 }
 
 impl Map {
     pub fn new(player_position: usize) -> Self {
-        let mut m = Map { map: vec![TileType::Floor; 80 * 50] };
+        let mut m = Map {
+            map: vec![TileType::Floor; 80 * 50],
+        };
         for x in 0..80 {
             m.map[xy_idx(x, 0)] = TileType::Wall;
             m.map[xy_idx(x, 49)] = TileType::Wall;
@@ -33,7 +35,7 @@ impl Map {
             if player_position != idx {
                 m.map[idx] = TileType::Wall;
             }
-        };
+        }
 
         m
     }
